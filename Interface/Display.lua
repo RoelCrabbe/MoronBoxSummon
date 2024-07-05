@@ -96,7 +96,8 @@ local BackDrop = {
 function MBS.MainFrame:CreateMainFrame()
 
     MBS_DefaultFrameTemplate(self)
-    Print("é")
+    MBS_CreateSummonList(self.TitleBackground)
+
     self:Show()
 end
 
@@ -138,7 +139,7 @@ function MBS_CreateButton(Parent, Text, Width, Height)
     local Button = CreateFrame("Button", nil, Parent)
     Button:SetBackdrop(BackDrop)
     MBS_SetSize(Button, Width, Height)
-    MBS_SetBackdropColor(Button, "Gray600")
+    MBS_SetBackdropColor(Button, "Gray800")
 
     local Overlay = Button:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     Overlay:SetText(Text)
@@ -146,11 +147,11 @@ function MBS_CreateButton(Parent, Text, Width, Height)
     Button.Overlay = Overlay
 
     local function Button_OnEnter()
-        MBS_SetBackdropColor(Button, "Gray400")
+        MBS_SetBackdropColor(Button, "Gray600")
     end
 
     local function Button_OnLeave()
-        MBS_SetBackdropColor(Button, "Gray600")
+        MBS_SetBackdropColor(Button, "Gray800")
     end
 
     Button:SetScript("OnEnter", Button_OnEnter)
@@ -218,4 +219,46 @@ function MBS_DefaultFrameTemplate(Frame)
     Frame:SetScript("OnMouseUp", Frame_OnMouseUp)
     Frame:SetScript("OnMouseDown", Frame_OnMouseDown)
     Frame:SetScript("OnHide", Frame_OnMouseUp)
+end
+
+function MBS_CreateSummonTemplate(Name, Parent)
+
+    local SummonButton = CreateFrame("Button", Name, Parent)
+    MBS_SetSize(SummonButton, 100, 15)
+    SummonButton:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+
+    local Overlay = SummonButton:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    Overlay:SetText(Text)
+    Overlay:SetPoint("CENTER", SummonButton, "CENTER")
+    SummonButton.Overlay = Overlay
+
+    SummonButton:SetScript("OnClick", function()
+        if SummonButton.UnitID then
+            MBS_ListItemOnClick(arg1, SummonButton.UnitID)
+        end
+    end)
+    return SummonButton
+end
+
+function MBS_CreateSummonListItem(Parent, Name, RelativeTo)
+    local listItem = MBS_CreateSummonTemplate(Name, Parent)
+    listItem:SetPoint("TOPLEFT", RelativeTo, "BOTTOMLEFT", 0, -5)
+    return listItem
+end
+
+function MBS_CreateSummonList(Parent)
+    if not Parent then return end
+
+    local SummonList = CreateFrame("Frame", "MoronBoxSummonPlayerListFrame", Parent)
+    MBS_SetSize(SummonList, 100, 100)
+    SummonList:SetPoint("TOP", Parent, "BOTTOM", 10, 5)
+    Parent.SummonList = SummonList
+
+    for i = 1, 10 do
+        local PreviousItem = i == 1 and Parent or Parent["ListItem"..(i - 1)]
+        local Item = MBS_CreateSummonListItem(SummonList, "$parentListItem"..i, PreviousItem)
+        SummonList["ListItem"..i] = Item
+    end
+
+    return SummonList
 end

@@ -104,49 +104,39 @@ function MBS_TableHasValue(tab, val)
     return false
 end
 
-function MBS_ListItemOnClick(arg1)
+function MBS_ListItemOnClick(arg1, UnitID)
 
     if arg1 == "LeftButton" then
 
-        local RaidMemberIds = MBS_GetRaidMembers()
+        if UnitID then
 
-        if RaidMemberIds then
+            local pCombat = UnitAffectingCombat("player")
+            local tCombat = UnitAffectingCombat(UnitID)
+            local Message = "Summoning <"..GetColors(UnitID).."> ["..mb_numShards().." Shards]"
 
-            for i, v in ipairs(RaidMemberIds) do
-                if v.rName == name then
-                    UnitID = "raid"..v.rIndex
-                    break
-                end
+            if (pCombat and tCombat) or mb_numShards() == 0 then
+                return
             end
 
-            if UnitID then
-                local pCombat = UnitAffectingCombat("player")
-                local tCombat = UnitAffectingCombat(UnitID)
-                local Message = "Summoning <"..GetColors(name).."> ["..mb_numShards().." Shards]"
-
-                if (pCombat and tCombat) or mb_numShards() == 0 then
-                    return
-                end
-
-                if mb_hasBuffOrDebuff("Evil Twin", UnitID, "debuff") then
-                    MBS_AddonMessage(MSG_PREFIX_REMOVE, name)
-                    return
-                end
-
-                DoEmote("Stand")
-                TargetUnit(UnitID)
-
-                if CheckInteractDistance(UnitID, 4) then
-                    MBS_AddonMessage(MSG_PREFIX_REMOVE, name)
-                    return
-                end
-
-                CastSpellByName("Ritual of Summoning")
-                MBS_ChatMessage(Message)
+            if mb_hasBuffOrDebuff("Evil Twin", UnitID, "debuff") then
                 MBS_AddonMessage(MSG_PREFIX_REMOVE, name)
-            else
-                MBS_AddonMessage(MSG_PREFIX_REMOVE, name)
+                return
             end
+
+            DoEmote("Stand")
+            TargetUnit(UnitID)
+
+            if CheckInteractDistance(UnitID, 4) then
+                MBS_AddonMessage(MSG_PREFIX_REMOVE, name)
+                return
+            end
+
+            CastSpellByName("Ritual of Summoning")
+            MBS_ChatMessage(Message)
+            MBS_AddonMessage(MSG_PREFIX_REMOVE, name)
+        else
+
+            MBS_AddonMessage(MSG_PREFIX_REMOVE, name)
         end
 
     elseif arg1 == "RightButton" then
@@ -192,52 +182,55 @@ function MBS_UpdateList()
         end
 
 		for i = 1, 10 do
-			if TempRaidTable[i] then
+            local baseFrame = "MoronBoxSummonPlayerListFrame"
+            local SummonList = getglobal(baseFrame)
+            local listItem = SummonList["ListItem"..i]
 
-				getglobal("RaidSummon_NameList"..i.."TextName"):SetText(TempRaidTable[i].rName)
+			if TempRaidTable[i] then
+				listItem.Overlay:SetText(TempRaidTable[i].rName)
 				
 				if TempRaidTable[i].rClass == "Druid" then
 					local c = MBS_GetClassColor("DRUID")
-					getglobal("RaidSummon_NameList"..i.."TextName"):SetTextColor(c.r, c.g, c.b, 1)
+					listItem.Overlay:SetTextColor(c.r, c.g, c.b, 1)
 				elseif TempRaidTable[i].rClass == "Hunter" then
 					local c = MBS_GetClassColor("HUNTER")
-					getglobal("RaidSummon_NameList"..i.."TextName"):SetTextColor(c.r, c.g, c.b, 1)
+					listItem.Overlay:SetTextColor(c.r, c.g, c.b, 1)
 				elseif TempRaidTable[i].rClass == "Mage" then
 					local c = MBS_GetClassColor("MAGE")
-					getglobal("RaidSummon_NameList"..i.."TextName"):SetTextColor(c.r, c.g, c.b, 1)
+					listItem.Overlay:SetTextColor(c.r, c.g, c.b, 1)
 				elseif TempRaidTable[i].rClass == "Paladin" then
 					local c = MBS_GetClassColor("PALADIN")
-					getglobal("RaidSummon_NameList"..i.."TextName"):SetTextColor(c.r, c.g, c.b, 1)
+					listItem.Overlay:SetTextColor(c.r, c.g, c.b, 1)
 				elseif TempRaidTable[i].rClass == "Priest" then
 					local c = MBS_GetClassColor("PRIEST")
-					getglobal("RaidSummon_NameList"..i.."TextName"):SetTextColor(c.r, c.g, c.b, 1)
+					listItem.Overlay:SetTextColor(c.r, c.g, c.b, 1)
 				elseif TempRaidTable[i].rClass == "Rogue" then
 					local c = MBS_GetClassColor("ROGUE")
-					getglobal("RaidSummon_NameList"..i.."TextName"):SetTextColor(c.r, c.g, c.b, 1)
+					listItem.Overlay:SetTextColor(c.r, c.g, c.b, 1)
 				elseif TempRaidTable[i].rClass == "Shaman" then
 					local c = MBS_GetClassColor("SHAMAN")
-					getglobal("RaidSummon_NameList"..i.."TextName"):SetTextColor(c.r, c.g, c.b, 1)
+					listItem.Overlay:SetTextColor(c.r, c.g, c.b, 1)
 				elseif TempRaidTable[i].rClass == "Warlock" then
 					local c = MBS_GetClassColor("WARLOCK")
-					getglobal("RaidSummon_NameList"..i.."TextName"):SetTextColor(c.r, c.g, c.b, 1)
+					listItem.Overlay:SetTextColor(c.r, c.g, c.b, 1)
 				elseif TempRaidTable[i].rClass == "Warrior" then
 					local c = MBS_GetClassColor("WARRIOR")
-					getglobal("RaidSummon_NameList"..i.."TextName"):SetTextColor(c.r, c.g, c.b, 1)
+					listItem.Overlay:SetTextColor(c.r, c.g, c.b, 1)
 				end				
 				
-				getglobal("RaidSummon_NameList"..i):Show()
+                listItem.Overlay:Show()
 			else
-				getglobal("RaidSummon_NameList"..i):Hide()
+				listItem.Overlay:Hide()
 			end
 		end
 		
 		if not MBS.Session.PlayerData[1] then
-			if RaidSummon_RequestFrame:IsVisible() then
+			if MBS.MainFrame:IsVisible() then
 				
-				RaidSummon_RequestFrame:Hide()
+				MBS.MainFrame:Hide()
 			end
 		else
-			ShowUIPanel(RaidSummon_RequestFrame, 1)
+			ShowUIPanel(MBS.MainFrame, 1)
 		end
 	end	
 end

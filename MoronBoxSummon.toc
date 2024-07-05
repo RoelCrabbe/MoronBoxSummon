@@ -1,0 +1,16 @@
+## Interface: 11200
+## Title: MoronBoxSummon by |cff00ccffMoRoN|r
+## Author: MoRoN
+## Notes: |cff00ccffMoronBoxSummon|r is based on RaidSummon by |cff02bf02Luise|r but is a stripped down version from it.
+## Dependencies: MoronBoxCore
+## LoadOnDemand: 0
+
+Utility\Localization.lua
+Utility\Utility.lua
+
+Core\Main.lua
+Core\GroupData.lua
+Core\Range.lua
+
+Interface\Actions.lua
+Interface\Display.lua

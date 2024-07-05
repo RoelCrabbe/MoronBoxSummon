@@ -35,7 +35,9 @@ do
 end
 
 function MBS:OnEvent()
-    if event == "ADDON_LOADED" and arg1 == MBH_TITLE then
+    if event == "ADDON_LOADED" and arg1 == "MoronBoxSummon" then
+
+        MBS:CreateWindows()
 
     elseif event == "CHAT_MSG_SAY" or event == "CHAT_MSG_RAID" or event == "CHAT_MSG_PARTY" then
 
@@ -66,6 +68,8 @@ function MBS:OnEvent()
         end
     end
 end
+
+MBS:SetScript("OnEvent", MBS.OnEvent) 
 
 function MBS_AddonMessage(Msg, Arg)
 
@@ -158,7 +162,7 @@ function MBS_UpdateList()
     local TempRaidTable = { }
     local raidNum = GetNumRaidMembers()
 
-    if (UnitClass("player") == "Warlock") then
+    if ( MBS.Session.PlayerClass == "Warlock" ) then
 
         if raidNum > 0 then
             for i = 1, raidNum do
@@ -253,7 +257,7 @@ function MBS_GetRaidMembers()
     local TempRaidTable = { }
     local raidNum = GetNumRaidMembers()
 
-	if (raidNum > 0) then
+	if raidNum > 0 then
 		for i = 1, raidNum do
 			local rName, _, rGroup = GetRaidRosterInfo(i)
 

@@ -19,6 +19,9 @@ MBS.Session = {
     }
 }
 
+MSG_PREFIX_ADD		= "RSAdd"
+MSG_PREFIX_REMOVE	= "RSRemove"
+
 -------------------------------------------------------------------------------
 -- Core Event Code {{{
 -------------------------------------------------------------------------------
@@ -42,7 +45,7 @@ function MBS:OnEvent()
     elseif event == "CHAT_MSG_SAY" or event == "CHAT_MSG_RAID" or event == "CHAT_MSG_PARTY" then
 
         if string.find(arg1, "123") then
-            MBS_AddonMessage(MSG_PREFIX_ADD, arg2)
+            SendAddonMessage(MSG_PREFIX_ADD, arg2, "RAID")
         end
 
     elseif event == "CHAT_MSG_ADDON" then
@@ -87,11 +90,11 @@ function MBS_ChatMessage(Msg)
 
     if UnitInRaid("player") then
 		
-		SendAddonMessage(Msg, "RAID")
+		SendChatMessage(Msg, "RAID")
 
 	elseif UnitInParty("player") then
 		
-		SendAddonMessage(Msg, "PARTY")
+		SendChatMessage(Msg, "PARTY")
 	end
 end
 
@@ -156,71 +159,60 @@ function MBS_UpdateList()
 
         if raidNum > 0 then
             for i = 1, raidNum do
-                local rName, _, rGroup = GetRaidRosterInfo(i)
+                local rName, _, rGroup, _, rClass = GetRaidRosterInfo(i)
 
-                for i, v in ipairs (MBS.Session.PlayerData) do 
+                for j, v in ipairs(MBS.Session.PlayerData) do 
                     if v == rName then
 
-                        TempRaidTable[i] = {
+                        TempRaidTable[j] = {
                             rName = rName,
                             rGroup = rGroup,
-                            rIndex = i
+                            rClass = rClass,
+                            rVIP = (rClass == "Warlock") and true or false,
+                            rIndex = j
                         }
-
-                        if rClass == "Warlock" then
-
-                            TempRaidTable[i].rVIP = true
-                        else
-
-                            TempRaidTable[i].rVIP = false
-                        end
                     end
                 end
-            end
 
-            table.sort(TempRaidTable, function(a,b) return tostring(a.rVIP) > tostring(b.rVIP) end)
+                table.sort(TempRaidTable, function(a, b) return tostring(a.rVIP) > tostring(b.rVIP) end)
+            end
         end
 
 		for i = 1, 10 do
-            local baseFrame = "MoronBoxSummonPlayerListFrame"
-            local SummonList = getglobal(baseFrame)
-            local listItem = SummonList["ListItem"..i]
+
+            local listItem = getglobal("MoronBoxSummonPlayerListFrameListItem"..i)
 
 			if TempRaidTable[i] then
-				listItem.Overlay:SetText(TempRaidTable[i].rName)
-				
-				if TempRaidTable[i].rClass == "Druid" then
-					local c = MBS_GetClassColor("DRUID")
-					listItem.Overlay:SetTextColor(c.r, c.g, c.b, 1)
-				elseif TempRaidTable[i].rClass == "Hunter" then
-					local c = MBS_GetClassColor("HUNTER")
-					listItem.Overlay:SetTextColor(c.r, c.g, c.b, 1)
-				elseif TempRaidTable[i].rClass == "Mage" then
-					local c = MBS_GetClassColor("MAGE")
-					listItem.Overlay:SetTextColor(c.r, c.g, c.b, 1)
-				elseif TempRaidTable[i].rClass == "Paladin" then
-					local c = MBS_GetClassColor("PALADIN")
-					listItem.Overlay:SetTextColor(c.r, c.g, c.b, 1)
-				elseif TempRaidTable[i].rClass == "Priest" then
-					local c = MBS_GetClassColor("PRIEST")
-					listItem.Overlay:SetTextColor(c.r, c.g, c.b, 1)
-				elseif TempRaidTable[i].rClass == "Rogue" then
-					local c = MBS_GetClassColor("ROGUE")
-					listItem.Overlay:SetTextColor(c.r, c.g, c.b, 1)
-				elseif TempRaidTable[i].rClass == "Shaman" then
-					local c = MBS_GetClassColor("SHAMAN")
-					listItem.Overlay:SetTextColor(c.r, c.g, c.b, 1)
-				elseif TempRaidTable[i].rClass == "Warlock" then
-					local c = MBS_GetClassColor("WARLOCK")
-					listItem.Overlay:SetTextColor(c.r, c.g, c.b, 1)
-				elseif TempRaidTable[i].rClass == "Warrior" then
-					local c = MBS_GetClassColor("WARRIOR")
-					listItem.Overlay:SetTextColor(c.r, c.g, c.b, 1)
-				end				
-				
-                listItem.Overlay:Show()
+
+                local function SetClassColor(Class)
+                    local color = MBS_GetClassColor(Class)
+                    listItem.Overlay:SetTextColor(color.r, color.g, color.b, 1)
+                end
+
+                if TempRaidTable[i].rClass == "Druid" then
+                    SetClassColor("DRUID")
+                elseif TempRaidTable[i].rClass == "Hunter" then
+                    SetClassColor("HUNTER")
+                elseif TempRaidTable[i].rClass == "Mage" then
+                    SetClassColor("MAGE")
+                elseif TempRaidTable[i].rClass == "Paladin" then
+                    SetClassColor("PALADIN")
+                elseif TempRaidTable[i].rClass == "Priest" then
+                    SetClassColor("PRIEST")
+                elseif TempRaidTable[i].rClass == "Rogue" then
+                    SetClassColor("ROGUE")
+                elseif TempRaidTable[i].rClass == "Shaman" then
+                    SetClassColor("SHAMAN")
+                elseif TempRaidTable[i].rClass == "Warlock" then
+                    SetClassColor("WARLOCK")
+                elseif TempRaidTable[i].rClass == "Warrior" then
+                    SetClassColor("WARRIOR")
+                end
+
+                listItem.Overlay:SetText(TempRaidTable[i].rName)
+                listItem:Show()                
 			else
-				listItem.Overlay:Hide()
+				listItem:Hide()
 			end
 		end
 		

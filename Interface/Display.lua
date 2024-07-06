@@ -240,10 +240,11 @@ function MBS_CreateSummonTemplate(Name, Parent)
     SummonButton:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 
     local Overlay = SummonButton:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    Overlay:SetText(Text)
+    Overlay:SetText("Name")
     Overlay:SetPoint("CENTER", SummonButton, "CENTER")
     SummonButton.Overlay = Overlay
 
+    SummonButton:Hide()
     SummonButton:SetScript("OnClick", function()
         if SummonButton.UnitID then
             MBS_ListItemOnClick(arg1, SummonButton.UnitID)
@@ -254,7 +255,7 @@ end
 
 function MBS_CreateSummonListItem(Parent, Name, RelativeTo)
     local listItem = MBS_CreateSummonTemplate(Name, Parent)
-    listItem:SetPoint("TOPLEFT", RelativeTo, "BOTTOMLEFT", 0, -5)
+    listItem:SetPoint("TOPLEFT", RelativeTo, "BOTTOMLEFT", 0, 0)
     return listItem
 end
 
@@ -262,12 +263,12 @@ function MBS_CreateSummonList(Parent)
     if not Parent then return end
 
     local SummonList = CreateFrame("Frame", "MoronBoxSummonPlayerListFrame", Parent)
-    MBS_SetSize(SummonList, 100, 100)
-    SummonList:SetPoint("TOP", Parent, "BOTTOM", 10, 5)
+    MBS_SetSize(SummonList, 100, 1)
+    SummonList:SetPoint("TOP", Parent, "BOTTOM", 0, 0)
     Parent.SummonList = SummonList
 
     for i = 1, 10 do
-        local PreviousItem = i == 1 and Parent or Parent["ListItem"..(i - 1)]
+        local PreviousItem = i == 1 and SummonList or SummonList["ListItem"..(i - 1)]
         local Item = MBS_CreateSummonListItem(SummonList, "$parentListItem"..i, PreviousItem)
         SummonList["ListItem"..i] = Item
     end

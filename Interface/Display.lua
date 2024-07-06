@@ -72,6 +72,8 @@ local ColorPicker = {
 
     -- Red Shades
     Red500 = { r = 0.937, g = 0.267, b = 0.267, a = 1 },    -- #ef4444
+    Red550 = { r = 0.4, g = 0.1, b = 0.1, a = 1 },   -- #cc3333
+    Red600 = { r = 0.404, g = 0.1, b = 0.1, a = 1 },
     Red700 = { r = 0.725, g = 0.110, b = 0.110, a = 1 },    -- #b91c1c
 }
 
@@ -182,25 +184,18 @@ function MBS_DefaultFrameTemplate(Frame)
     MBS_SetSize(Frame, 100, 180)
     MBS_SetBackdropColor(Frame, "Gray850")
 
-    local TitleBackground = CreateFrame("Frame", nil, Frame)
+    local TitleBackground = CreateFrame("Button", nil, Frame)
     TitleBackground:SetBackdrop(BackDrop)
+    TitleBackground:RegisterForClicks("LeftButtonUp", "RightButtonUp")
     MBS_SetBackdropColor(TitleBackground, "Gray800")
     TitleBackground:SetPoint("TOPLEFT", Frame, "TOPLEFT", 0, 0)
     TitleBackground:SetPoint("BOTTOMRIGHT", Frame, "TOPRIGHT", 0, -25)
     Frame.TitleBackground = TitleBackground
 
     local Title = TitleBackground:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    Title:SetText("MBS")
-    Title:SetPoint("CENTER", TitleBackground, "LEFT", 15, 0)
+    Title:SetText("MoronBoxSummon")
+    Title:SetPoint("CENTER", TitleBackground, "CENTER", 0, 0)
     TitleBackground.Title = Title
-
-    local CloseButton = MBS_CreateButton(TitleBackground, "X", 20, 20) 
-    CloseButton:SetPoint("CENTER", TitleBackground, "RIGHT", -12.5, 0)
-    TitleBackground.CloseButton = CloseButton
-
-    CloseButton:SetScript("OnClick", function()
-        Frame:Hide()
-    end)
 
     local function Frame_OnMouseUp()
         if IsMoving then
@@ -219,6 +214,23 @@ function MBS_DefaultFrameTemplate(Frame)
     Frame:SetScript("OnMouseUp", Frame_OnMouseUp)
     Frame:SetScript("OnMouseDown", Frame_OnMouseDown)
     Frame:SetScript("OnHide", Frame_OnMouseUp)
+    TitleBackground:SetScript("OnMouseUp", Frame_OnMouseUp)
+    TitleBackground:SetScript("OnMouseDown", Frame_OnMouseDown)
+    TitleBackground:SetScript("OnHide", Frame_OnMouseUp)
+
+    TitleBackground:SetScript("OnEnter", function()
+        MBS_SetBackdropColor(TitleBackground, "Red600")
+    end)
+
+    TitleBackground:SetScript("OnLeave", function()
+        MBS_SetBackdropColor(TitleBackground, "Gray800")
+    end)
+
+    TitleBackground:SetScript("OnClick", function()
+        if arg1 == "RightButton" then
+            Frame:Hide()
+        end
+    end)
 end
 
 function MBS_CreateSummonTemplate(Name, Parent)

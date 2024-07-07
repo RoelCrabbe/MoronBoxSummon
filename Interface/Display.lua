@@ -33,6 +33,7 @@ end
 -------------------------------------------------------------------------------
 
 local ColorPicker = {
+    Transparent = { r = 0, g = 0, b = 0, a = 0 },
     White = { r = 1, g = 1, b = 1, a = 1 },                 -- #ffffff
     Black = { r = 0, g = 0, b = 0, a = 1 },                 -- #000000 
 
@@ -236,20 +237,31 @@ end
 function MBS_CreateSummonTemplate(Name, Parent)
 
     local SummonButton = CreateFrame("Button", Name, Parent)
-    MBS_SetSize(SummonButton, 100, 15)
     SummonButton:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+    SummonButton:SetBackdrop(BackDrop)
+    MBS_SetSize(SummonButton, 100, 20)
+    MBS_SetBackdropColor(SummonButton, "Transparent")
 
     local Overlay = SummonButton:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     Overlay:SetText("Name")
     Overlay:SetPoint("CENTER", SummonButton, "CENTER")
     SummonButton.Overlay = Overlay
 
-    SummonButton:Hide()
     SummonButton:SetScript("OnClick", function()
         if SummonButton.UnitID then
             MBS_ListItemOnClick(arg1, SummonButton.UnitID)
         end
     end)
+
+    SummonButton:SetScript("OnEnter", function()
+        MBS_SetBackdropColor(SummonButton, "Gray500")
+    end)
+
+    SummonButton:SetScript("OnLeave", function()
+        MBS_SetBackdropColor(SummonButton, "Transparent")
+    end)
+
+    SummonButton:Hide()
     return SummonButton
 end
 
@@ -267,7 +279,7 @@ function MBS_CreateSummonList(Parent)
     SummonList:SetPoint("TOP", Parent, "BOTTOM", 0, 0)
     Parent.SummonList = SummonList
 
-    for i = 1, 10 do
+    for i = 1, MBS.Session.Max_Amount_Shown do
         local PreviousItem = i == 1 and SummonList or SummonList["ListItem"..(i - 1)]
         local Item = MBS_CreateSummonListItem(SummonList, "$parentListItem"..i, PreviousItem)
         SummonList["ListItem"..i] = Item

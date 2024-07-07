@@ -151,7 +151,7 @@ function MBS_UpdateList()
                         TempRaidTable[j] = {
                             rName = rName,
                             rClass = rClass,
-                            rVIP = (rClass == MBS.Session.Warlock) and true or false,
+                            rVIP = (rClass == MBS.Session.Warlock),
                             rIndex = "raid"..i
                         }
                     end

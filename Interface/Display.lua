@@ -16,16 +16,16 @@ function MBS_ResetAllWindow()
 end
 
 function MBS_OpenMainFrame()
-    if MBS.MainFrame:IsShown() then
+    if MBS.MainFrame:IsVisible() then
         MBS_CloseAllWindow()
     else 
-        MBS.MainFrame:Show()
+        ShowUIPanel(MBS.MainFrame)  
     end
 end
 
 function MBS_CloseAllWindow()
     MBS_ResetAllWindow()
-    MBS.MainFrame:Hide()
+    HideUIPanel(MBS.MainFrame)
 end
 
 -------------------------------------------------------------------------------
@@ -111,7 +111,7 @@ function MBS_ResetFramePosition(Frame)
 
     Frame:ClearAllPoints()
     Frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-    Frame:Hide()
+    HideUIPanel(Frame)
 end
 
 function MBS_SetBackdropColor(Frame, Color)
@@ -185,11 +185,11 @@ function MBS_DefaultFrameTemplate(Frame)
 
     TitleBackground:SetScript("OnClick", function()
         if arg1 == "RightButton" then
-            Frame:Hide()
+            HideUIPanel(Frame)
         end
     end)
 
-    Frame:Hide()
+    HideUIPanel(Frame)
 end
 
 function MBS_CreateSummonTemplate(Name, Parent)
@@ -205,21 +205,24 @@ function MBS_CreateSummonTemplate(Name, Parent)
     Overlay:SetPoint("CENTER", SummonButton, "CENTER")
     SummonButton.Overlay = Overlay
 
-    SummonButton:SetScript("OnClick", function()
+    local function SummonButton_OnClick()
         if SummonButton.UnitID then
             MBS_ListItemOnClick(arg1, SummonButton.UnitID)
         end
-    end)
+    end
 
-    SummonButton:SetScript("OnEnter", function()
+    local function SummonButton_OnEnter()
         MBS_SetBackdropColor(SummonButton, "Gray500")
-    end)
+    end
 
-    SummonButton:SetScript("OnLeave", function()
+    local function SummonButton_OnLeave()
         MBS_SetBackdropColor(SummonButton, "Transparent")
-    end)
+    end
 
-    SummonButton:Hide()
+    SummonButton:SetScript("OnClick", SummonButton_OnClick)
+    SummonButton:SetScript("OnEnter", SummonButton_OnEnter)
+    SummonButton:SetScript("OnLeave", SummonButton_OnLeave)
+    HideUIPanel(SummonButton)
     return SummonButton
 end
 

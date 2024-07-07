@@ -11,6 +11,7 @@ local AddonInitializer = CreateFrame("Frame", nil)
 
 MBS.Session = {
     Title = "MoronBoxSummon",
+    Warlock = "Warlock",
     PlayerName = UnitName("player"),
 	PlayerClass = UnitClass("player"),
     PlayerData = {},
@@ -80,7 +81,7 @@ function AddonInitializer:OnUpdate()
     MBS.Session.AddonLoader.Cooldown = MBS.Session.AddonLoader.Cooldown - arg1
     if MBS.Session.AddonLoader.Cooldown > 0 then return end
 
-    if MBS.Session.PlayerClass ~= "Warlock" then
+    if MBS.Session.PlayerClass ~= MBS.Session.Warlock then
         if GetAddOnInfo(MBS.Session.Title) then
             DisableAddOn(MBS.Session.Title)
         end
@@ -138,7 +139,7 @@ function MBS_UpdateList()
     local TempRaidTable = { }
     local raidNum = GetNumRaidMembers()
 
-    if ( MBS.Session.PlayerClass == "Warlock" ) then
+    if ( MBS.Session.PlayerClass == MBS.Session.Warlock ) then
 
         if raidNum > 0 then
             for i = 1, raidNum do
@@ -150,7 +151,7 @@ function MBS_UpdateList()
                         TempRaidTable[j] = {
                             rName = rName,
                             rClass = rClass,
-                            rVIP = (rClass == "Warlock") and true or false,
+                            rVIP = (rClass == MBS.Session.Warlock) and true or false,
                             rIndex = "raid"..i
                         }
                     end
@@ -167,42 +168,23 @@ function MBS_UpdateList()
 			if TempRaidTable[i] then
 
                 local function SetClassColor(Class)
-                    local color = MBS_GetClassColor(Class)
+                    local color = MBS_GetClassColor(string.upper(Class))
                     listItem.Overlay:SetTextColor(color.r, color.g, color.b, 1)
-                end
-
-                if TempRaidTable[i].rClass == "Druid" then
-                    SetClassColor("DRUID")
-                elseif TempRaidTable[i].rClass == "Hunter" then
-                    SetClassColor("HUNTER")
-                elseif TempRaidTable[i].rClass == "Mage" then
-                    SetClassColor("MAGE")
-                elseif TempRaidTable[i].rClass == "Paladin" then
-                    SetClassColor("PALADIN")
-                elseif TempRaidTable[i].rClass == "Priest" then
-                    SetClassColor("PRIEST")
-                elseif TempRaidTable[i].rClass == "Rogue" then
-                    SetClassColor("ROGUE")
-                elseif TempRaidTable[i].rClass == "Shaman" then
-                    SetClassColor("SHAMAN")
-                elseif TempRaidTable[i].rClass == "Warlock" then
-                    SetClassColor("WARLOCK")
-                elseif TempRaidTable[i].rClass == "Warrior" then
-                    SetClassColor("WARRIOR")
                 end
 
                 listItem.UnitID = TempRaidTable[i].rIndex
                 listItem.Overlay:SetText(TempRaidTable[i].rName)
-                listItem:Show()                
+                SetClassColor(TempRaidTable[i].rClass)
+                ShowUIPanel(listItem)               
 			else
-				listItem:Hide()
+                HideUIPanel(listItem)
 			end
 		end
 		
 		if not MBS.Session.PlayerData[1] then
 			if MBS.MainFrame:IsVisible() then
 				
-				MBS.MainFrame:Hide()
+                HideUIPanel(MBS.MainFrame)
 			end
 		else
 			ShowUIPanel(MBS.MainFrame, 1)

@@ -100,8 +100,6 @@ function MBS.MainFrame:CreateMainFrame()
 
     MBS_DefaultFrameTemplate(self)
     MBS_CreateSummonList(self.TitleBackground)
-
-    self:Show()
 end
 
 -------------------------------------------------------------------------------
@@ -131,48 +129,6 @@ end
 
 function MBS_GetColorValue(colorKey)
     return ColorPicker[colorKey].r, ColorPicker[colorKey].g, ColorPicker[colorKey].b, ColorPicker[colorKey].a
-end
-
-function MBS_CreateButton(Parent, Text, Width, Height)
-    if not Parent or not Text then return end
-
-    Width = Width or 60
-    Height = Height or 25
-
-    local Button = CreateFrame("Button", nil, Parent)
-    Button:SetBackdrop(BackDrop)
-    MBS_SetSize(Button, Width, Height)
-    MBS_SetBackdropColor(Button, "Gray800")
-
-    local Overlay = Button:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    Overlay:SetText(Text)
-    Overlay:SetPoint("CENTER", Button, "CENTER")
-    Button.Overlay = Overlay
-
-    local function Button_OnEnter()
-        MBS_SetBackdropColor(Button, "Gray600")
-    end
-
-    local function Button_OnLeave()
-        MBS_SetBackdropColor(Button, "Gray800")
-    end
-
-    Button:SetScript("OnEnter", Button_OnEnter)
-    Button:SetScript("OnLeave", Button_OnLeave)
-    return Button
-end
-
-function MBS_CreateInnerContainer(Parent)
-    if not Parent then return end
-
-    local InnerContainer = CreateFrame("Frame", nil, Parent)
-    InnerContainer:SetBackdrop(BackDrop)
-    MBS_SetSize(InnerContainer, 730, 415)
-    MBS_SetBackdropColor(InnerContainer, "Gray600")
-    InnerContainer:SetPoint("TOPLEFT", Parent, "TOPLEFT", 35, -75)
-    Parent.InnerContainer = InnerContainer
-
-    return InnerContainer
 end
 
 function MBS_DefaultFrameTemplate(Frame)
@@ -232,6 +188,8 @@ function MBS_DefaultFrameTemplate(Frame)
             Frame:Hide()
         end
     end)
+
+    Frame:Hide()
 end
 
 function MBS_CreateSummonTemplate(Name, Parent)
